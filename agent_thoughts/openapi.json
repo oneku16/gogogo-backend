@@ -1,0 +1,1279 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Antigravity Backend",
+    "description": "Backend API for Antigravity project",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/users/": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create User",
+        "description": "Create a new user.",
+        "operationId": "create_user_api_v1_users__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/": {
+      "post": {
+        "tags": [
+          "Telegram"
+        ],
+        "summary": "Create Telegram User",
+        "description": "Register a Telegram account and link it to an existing User.",
+        "operationId": "create_telegram_user_api_v1_telegram__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramUserLink"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramUserRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/offers": {
+      "post": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Create Ride Offer",
+        "operationId": "create_ride_offer_api_v1_offers_post",
+        "parameters": [
+          {
+            "name": "driver_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Driver Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRideOfferDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RideOfferDTO"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Get Ride Offers",
+        "operationId": "get_ride_offers_api_v1_offers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RideOfferDTO"
+                  },
+                  "title": "Response Get Ride Offers Api V1 Offers Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/offers/search": {
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Search Ride Offers",
+        "operationId": "search_ride_offers_api_v1_offers_search_get",
+        "parameters": [
+          {
+            "name": "start_location",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Start Location"
+            }
+          },
+          {
+            "name": "end_location",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "End Location"
+            }
+          },
+          {
+            "name": "seats_needed",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Seats Needed"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Start Time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RideOfferDTO"
+                  },
+                  "title": "Response Search Ride Offers Api V1 Offers Search Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/drivers/{driver_id}/offers": {
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Get Driver Offers",
+        "operationId": "get_driver_offers_api_v1_drivers__driver_id__offers_get",
+        "parameters": [
+          {
+            "name": "driver_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Driver Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RideOfferDTO"
+                  },
+                  "title": "Response Get Driver Offers Api V1 Drivers  Driver Id  Offers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/offers/{offer_id}": {
+      "delete": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Delete Ride Offer",
+        "operationId": "delete_ride_offer_api_v1_offers__offer_id__delete",
+        "parameters": [
+          {
+            "name": "offer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Offer Id"
+            }
+          },
+          {
+            "name": "driver_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Driver Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requests/search": {
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Search Ride Requests",
+        "operationId": "search_ride_requests_api_v1_requests_search_get",
+        "parameters": [
+          {
+            "name": "start_location",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Start Location"
+            }
+          },
+          {
+            "name": "end_location",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "End Location"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Start Time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RideRequestDTO"
+                  },
+                  "title": "Response Search Ride Requests Api V1 Requests Search Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requests": {
+      "post": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Create Ride Request",
+        "operationId": "create_ride_request_api_v1_requests_post",
+        "parameters": [
+          {
+            "name": "passenger_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Passenger Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRideRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RideRequestDTO"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Get Ride Requests",
+        "operationId": "get_ride_requests_api_v1_requests_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RideRequestDTO"
+                  },
+                  "title": "Response Get Ride Requests Api V1 Requests Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/passengers/{passenger_id}/requests": {
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Get Passenger Requests",
+        "operationId": "get_passenger_requests_api_v1_passengers__passenger_id__requests_get",
+        "parameters": [
+          {
+            "name": "passenger_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Passenger Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RideRequestDTO"
+                  },
+                  "title": "Response Get Passenger Requests Api V1 Passengers  Passenger Id  Requests Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/requests/{request_id}": {
+      "delete": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Delete Ride Request",
+        "operationId": "delete_ride_request_api_v1_requests__request_id__delete",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Request Id"
+            }
+          },
+          {
+            "name": "passenger_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Passenger Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/drivers/{driver_id}/photos": {
+      "post": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Upload Car Photo",
+        "operationId": "upload_car_photo_api_v1_drivers__driver_id__photos_post",
+        "parameters": [
+          {
+            "name": "driver_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Driver Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_car_photo_api_v1_drivers__driver_id__photos_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarPhotoDTO"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Get Driver Photos",
+        "operationId": "get_driver_photos_api_v1_drivers__driver_id__photos_get",
+        "parameters": [
+          {
+            "name": "driver_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Driver Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CarPhotoDTO"
+                  },
+                  "title": "Response Get Driver Photos Api V1 Drivers  Driver Id  Photos Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/photos/{photo_id}": {
+      "delete": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Delete Car Photo",
+        "operationId": "delete_car_photo_api_v1_photos__photo_id__delete",
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Photo Id"
+            }
+          },
+          {
+            "name": "driver_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Driver Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_upload_car_photo_api_v1_drivers__driver_id__photos_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_car_photo_api_v1_drivers__driver_id__photos_post"
+      },
+      "CarPhotoDTO": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "driver_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Driver Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "driver_id",
+          "url"
+        ],
+        "title": "CarPhotoDTO"
+      },
+      "CreateRideOfferDTO": {
+        "properties": {
+          "travel_start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Travel Start Date"
+          },
+          "travel_start_time": {
+            "type": "string",
+            "format": "time",
+            "title": "Travel Start Time"
+          },
+          "start_location": {
+            "type": "string",
+            "title": "Start Location"
+          },
+          "end_location": {
+            "type": "string",
+            "title": "End Location"
+          },
+          "request_source": {
+            "$ref": "#/components/schemas/RequestSource"
+          },
+          "car_model": {
+            "type": "string",
+            "title": "Car Model"
+          },
+          "total_seat_amount": {
+            "type": "integer",
+            "title": "Total Seat Amount"
+          },
+          "free_seats": {
+            "type": "integer",
+            "title": "Free Seats"
+          }
+        },
+        "type": "object",
+        "required": [
+          "travel_start_date",
+          "travel_start_time",
+          "start_location",
+          "end_location",
+          "request_source",
+          "car_model",
+          "total_seat_amount",
+          "free_seats"
+        ],
+        "title": "CreateRideOfferDTO"
+      },
+      "CreateRideRequestDTO": {
+        "properties": {
+          "travel_start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Travel Start Date"
+          },
+          "travel_start_time": {
+            "type": "string",
+            "format": "time",
+            "title": "Travel Start Time"
+          },
+          "start_location": {
+            "type": "string",
+            "title": "Start Location"
+          },
+          "end_location": {
+            "type": "string",
+            "title": "End Location"
+          },
+          "request_source": {
+            "$ref": "#/components/schemas/RequestSource"
+          },
+          "seat_amount": {
+            "type": "string",
+            "title": "Seat Amount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "travel_start_date",
+          "travel_start_time",
+          "start_location",
+          "end_location",
+          "request_source",
+          "seat_amount"
+        ],
+        "title": "CreateRideRequestDTO"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "RequestSource": {
+        "type": "string",
+        "enum": [
+          "telegram_app",
+          "mobile_app"
+        ],
+        "title": "RequestSource"
+      },
+      "RideOfferDTO": {
+        "properties": {
+          "travel_start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Travel Start Date"
+          },
+          "travel_start_time": {
+            "type": "string",
+            "format": "time",
+            "title": "Travel Start Time"
+          },
+          "start_location": {
+            "type": "string",
+            "title": "Start Location"
+          },
+          "end_location": {
+            "type": "string",
+            "title": "End Location"
+          },
+          "request_source": {
+            "$ref": "#/components/schemas/RequestSource"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "driver_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Driver Id"
+          },
+          "car_model": {
+            "type": "string",
+            "title": "Car Model"
+          },
+          "total_seat_amount": {
+            "type": "integer",
+            "title": "Total Seat Amount"
+          },
+          "free_seats": {
+            "type": "integer",
+            "title": "Free Seats"
+          }
+        },
+        "type": "object",
+        "required": [
+          "travel_start_date",
+          "travel_start_time",
+          "start_location",
+          "end_location",
+          "request_source",
+          "id",
+          "driver_id",
+          "car_model",
+          "total_seat_amount",
+          "free_seats"
+        ],
+        "title": "RideOfferDTO"
+      },
+      "RideRequestDTO": {
+        "properties": {
+          "travel_start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Travel Start Date"
+          },
+          "travel_start_time": {
+            "type": "string",
+            "format": "time",
+            "title": "Travel Start Time"
+          },
+          "start_location": {
+            "type": "string",
+            "title": "Start Location"
+          },
+          "end_location": {
+            "type": "string",
+            "title": "End Location"
+          },
+          "request_source": {
+            "$ref": "#/components/schemas/RequestSource"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "passenger_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Passenger Id"
+          },
+          "seat_amount": {
+            "type": "string",
+            "title": "Seat Amount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "travel_start_date",
+          "travel_start_time",
+          "start_location",
+          "end_location",
+          "request_source",
+          "id",
+          "passenger_id",
+          "seat_amount"
+        ],
+        "title": "RideRequestDTO"
+      },
+      "TelegramUserLink": {
+        "properties": {
+          "telegram_id": {
+            "type": "integer",
+            "title": "Telegram Id",
+            "description": "Telegram User ID"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "description": "Telegram username"
+          },
+          "language_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language Code",
+            "description": "Language code"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "ID of the user to link the telegram account to"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language",
+            "description": "Language code (client alias)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "telegram_id",
+          "user_id"
+        ],
+        "title": "TelegramUserLink"
+      },
+      "TelegramUserRead": {
+        "properties": {
+          "telegram_id": {
+            "type": "integer",
+            "title": "Telegram Id",
+            "description": "Telegram User ID"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "description": "Telegram username"
+          },
+          "language_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language Code",
+            "description": "Language code"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "telegram_id",
+          "id",
+          "user_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "TelegramUserRead"
+      },
+      "UserCreate": {
+        "properties": {
+          "phone_number": {
+            "type": "string",
+            "title": "Phone Number",
+            "description": "User's phone number"
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name",
+            "description": "User's first name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name",
+            "description": "User's last name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone_number"
+        ],
+        "title": "UserCreate"
+      },
+      "UserRead": {
+        "properties": {
+          "phone_number": {
+            "type": "string",
+            "title": "Phone Number",
+            "description": "User's phone number"
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name",
+            "description": "User's first name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name",
+            "description": "User's last name"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone_number",
+          "id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "UserRead"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

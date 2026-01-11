@@ -1,0 +1,21 @@
+📦 app/
+├── 🎯 representations/ (PRESENTATION LAYER - Handles API I/O)
+│   ├── api/             (FastAPI Routers/Controllers)
+│   │   └── v1/
+│   │       └── users.py (Receives request, calls Service, formats DTO response)
+│   ├── schemas/         (Input Validation: Pydantic Schemas - e.g., UserCreateSchema)
+│   └── dtos/            (Output Contract: Pydantic DTOs - e.g., UserResponseDTO)
+│
+├── ⚙️ services/          (APPLICATION LAYER - Orchestrates Domain and Infrastructure)
+│   └── user_service.py  (Implements use-cases, handles transactions, security checks)
+│
+├── 🧠 domain/            (DOMAIN LAYER - Contains Core Business Logic)
+│   ├── user.py          (User Entity/Aggregate Root - Enforces business rules)
+│   └── errors.py        (Custom Domain Exceptions)
+│
+└── 🧱 infrastructure/   (INFRASTRUCTURE LAYER - Handles persistence and external concerns)
+├── connections/     (DB, Cache, Message Broker configuration/initialization)
+├── orm/             (ORM Models, Repositories/Mappers)
+│   ├── user_orm.py  (SQLAlchemy/DB model that maps to a table)
+│   └── repository.py (Abstract/Concrete implementation of Persistence logic)
+└── dependencies/    (Dependency Injection setup, e.g., database session generators)

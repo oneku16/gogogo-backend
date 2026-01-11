@@ -1,0 +1,18 @@
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS base
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    && apt-get purge -y --auto-remove \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY pyproject.toml pyproject.toml
+COPY uv.lock uv.lock
+
+ENV UV_PROJECT_ENVIRONMENT="/usr/local/"
+ENV UV_HTTP_TIMEOUT=120
+RUN uv sync --group dev
+
+COPY . .
+
+CMD ["fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]

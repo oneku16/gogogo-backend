@@ -1,0 +1,56 @@
+services:
+  gogogo-app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.local
+    container_name: gogogo-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../:/app
+    env_file:
+      - ../.env.local
+    environment:
+      - POSTGRES_HOST=gogogo-db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - gogogo-db
+      - redis
+
+  gogogo-db:
+    image: postgres:15
+    container_name: gogogo-db
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    env_file:
+      - ../.env.local
+
+  redis:
+    image: redis:7-alpine
+    container_name: gogogo-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.local
+    container_name: gogogo-worker
+    command: celery -A app.core.celery_app.celery_app worker --loglevel=info
+    env_file:
+      - ../.env.local
+    environment:
+      - POSTGRES_HOST=gogogo-db
+      - REDIS_URL=redis://redis:6379/0
+      - BOT_WEBHOOK_URL=http://host.docker.internal:8001/notify
+    depends_on:
+      - gogogo-app
+      - gogogo-db
+      - redis
+
+volumes:
+  postgres_data:
