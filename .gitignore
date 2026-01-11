@@ -54,6 +54,7 @@ gogogo-db.session.sql
 
 
 # dev
+.idea/
 
 .env.*
 .vscode/

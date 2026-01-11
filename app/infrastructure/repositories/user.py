@@ -39,10 +39,16 @@ class TelegramUserRepository:
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
+    async def find_by_user_id(self, user_id: UUID) -> TelegramUser | None:
+        query = select(TelegramUser).where(TelegramUser.user_id == user_id)
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
     async def create(self, telegram_user_dto: CreateTelegramUserDTO, user_id: UUID) -> TelegramUser:
         telegram_user = TelegramUser(
             user_id=user_id,
             telegram_id=telegram_user_dto.telegram_id,
+            chat_id=telegram_user_dto.chat_id,
             username=telegram_user_dto.username,
             language_code=telegram_user_dto.language_code,
         )

@@ -40,7 +40,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.local
     container_name: gogogo-worker
-    command: celery -A app.core.celery_app.celery_app worker --loglevel=info
+    command: celery -A app.core.celery_app.celery_app worker --loglevel=info -Q gogogo_queue --pool=solo
     env_file:
       - ../.env.local
     environment:

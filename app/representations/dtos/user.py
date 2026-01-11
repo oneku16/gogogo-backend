@@ -25,6 +25,7 @@ class TelegramUserDTO:
     id: UUID
     user_id: UUID
     telegram_id: int
+    chat_id: int | None
     username: str | None
     language_code: str | None
     created_at: datetime
@@ -34,6 +35,7 @@ class TelegramUserDTO:
 @dataclass
 class CreateTelegramUserDTO:
     telegram_id: int
+    chat_id: int | None = None
     user_id: UUID | None = None
     username: str | None = None
     language_code: str | None = None

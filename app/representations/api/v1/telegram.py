@@ -21,6 +21,7 @@ async def create_telegram_user(
     
     dto = CreateTelegramUserDTO(
         telegram_id=link_data.telegram_id,
+        chat_id=link_data.chat_id,
         user_id=link_data.user_id,
         username=link_data.username,
         language_code=lang,

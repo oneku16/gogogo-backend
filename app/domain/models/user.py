@@ -20,6 +20,7 @@ class TelegramUser(BaseModel):
     
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), type_=UUID(as_uuid=True), nullable=False, unique=True, index=True)
     telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True, index=True)
+    chat_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
     username: Mapped[str] = mapped_column(String(64), nullable=True, index=True)
     language_code: Mapped[str] = mapped_column(String(64), nullable=True)
     

@@ -73,7 +73,8 @@ def process_ride_offer(offer_id: str):
             # Get Driver Telegram ID
             driver_tg = await service.telegram_user.find_by_user_id(offer.driver_id)
             driver_telegram_id = driver_tg.telegram_id if driver_tg else None
-            print(f"[TASK] Driver Telegram ID: {driver_telegram_id}")
+            driver_chat_id = driver_tg.chat_id if driver_tg and driver_tg.chat_id else driver_telegram_id
+            print(f"[TASK] Driver Telegram ID: {driver_telegram_id}, Chat ID: {driver_chat_id}")
 
             # Search Requests
             from app.representations.dtos.ride import RideRequestSearchDTO
@@ -94,17 +95,29 @@ def process_ride_offer(offer_id: str):
                 
                 if not webhook_url: return
 
-                payload = {
-                    "type": "matches_found_for_offer",
-                    "offer_id": offer_id,
-                    "driver_id": str(offer.driver_id),
-                    "driver_telegram_id": driver_telegram_id,
-                    "matches": [m.model_dump(mode='json') for m in matches]
-                }
-                
-                async with httpx.AsyncClient() as client:
-                    resp = await client.post(webhook_url, json=payload)
-                    print(f"[TASK] Webhook sent. Status: {resp.status_code}")
+                from app.representations.dtos.ride import RideOfferDTO
+                offer_dto = RideOfferDTO.model_validate(offer)
+
+                # Iterate through matching requests and notify each passenger
+                for match_request in matches:
+                    passenger_tg = await service.telegram_user.find_by_user_id(match_request.passenger_id)
+                    if not passenger_tg:
+                        print(f"[TASK] No Telegram user found for passenger {match_request.passenger_id}")
+                        continue
+                    
+                    passenger_chat_id = passenger_tg.chat_id if passenger_tg.chat_id else passenger_tg.telegram_id
+                    
+                    payload = {
+                        "type": "new_offer_found",
+                        "offer": offer_dto.model_dump(mode='json'),
+                        "request_id": str(match_request.id),
+                        "passenger_id": str(match_request.passenger_id),
+                        "passenger_chat_id": passenger_chat_id,
+                    }
+
+                    async with httpx.AsyncClient() as client:
+                        resp = await client.post(webhook_url, json=payload)
+                        print(f"[TASK] Webhook sent for passenger {match_request.passenger_id}. Status: {resp.status_code}")
                     
         except Exception as e:
             print(f"[TASK] Error: {e}")
@@ -113,10 +126,13 @@ def process_ride_offer(offer_id: str):
         finally:
             await session.close()
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(_process())
-    loop.close()
+    import asyncio
+    try:
+        asyncio.run(_process())
+    except RuntimeError:
+        # Fallback if a loop is already running (e.g. in some nested context)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(_process())
 
 @celery_app.task
 def process_ride_request(request_id: str):
@@ -138,7 +154,8 @@ def process_ride_request(request_id: str):
             # Get Passenger Telegram ID
             passenger_tg = await service.telegram_user.find_by_user_id(req.passenger_id)
             passenger_telegram_id = passenger_tg.telegram_id if passenger_tg else None
-            print(f"[TASK] Passenger Telegram ID: {passenger_telegram_id}")
+            passenger_chat_id = passenger_tg.chat_id if passenger_tg and passenger_tg.chat_id else passenger_telegram_id
+            print(f"[TASK] Passenger Telegram ID: {passenger_telegram_id}, Chat ID: {passenger_chat_id}")
 
             # Search Offers
             from app.representations.dtos.ride import RideOfferSearchDTO
@@ -167,6 +184,7 @@ def process_ride_request(request_id: str):
                     "request_id": request_id,
                     "passenger_id": str(req.passenger_id),
                     "passenger_telegram_id": passenger_telegram_id,
+                    "passenger_chat_id": passenger_chat_id,
                     "matches": [m.model_dump(mode='json') for m in matches]
                  }
                  async with httpx.AsyncClient() as client:
@@ -179,7 +197,9 @@ def process_ride_request(request_id: str):
         finally:
             await session.close()
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(_process())
-    loop.close()
+    import asyncio
+    try:
+        asyncio.run(_process())
+    except RuntimeError:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(_process())

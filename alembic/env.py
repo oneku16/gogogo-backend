@@ -31,7 +31,7 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-config.set_main_option("sqlalchemy.url", postgres_settings.dns_alembic)
+config.set_main_option("sqlalchemy.url", postgres_settings.dsn)
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.

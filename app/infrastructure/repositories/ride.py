@@ -1,6 +1,7 @@
+from datetime import timedelta, datetime
 from typing import Sequence
 from uuid import UUID
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, func, cast, Date
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.models.ride import RideOffer, RideRequest, CarPhoto
@@ -19,8 +20,8 @@ class RideOfferRepository:
             request_source=dto.request_source,
             travel_start_date=dto.travel_start_date,
             travel_start_time=dto.travel_start_time,
-            start_location=dto.start_location,
-            end_location=dto.end_location,
+            start_location=dto.start_location.lower().strip(),
+            end_location=dto.end_location.lower().strip(),
             car_model=dto.car_model,
             total_seat_amount=dto.total_seat_amount,
             free_seats=dto.free_seats
@@ -55,11 +56,20 @@ class RideOfferRepository:
         limit: int = 10,
         offset: int = 0
     ) -> Sequence[RideOffer]:
+        # Calculate Date Window (+2 days)
+        if isinstance(start_date, str):
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+        else:
+            start_date_obj = start_date
+            
+        end_date_limit = start_date_obj + timedelta(hours=4)
+
         query = select(RideOffer).where(
-            RideOffer.start_location == start_location,
-            RideOffer.end_location == end_location,
+            RideOffer.start_location == start_location.lower().strip(),
+            RideOffer.end_location == end_location.lower().strip(),
             RideOffer.free_seats >= seats_needed,
-            RideOffer.travel_start_date >= start_date # Assumes date comparison works with string or object
+            RideOffer.travel_start_date >= start_date,
+            RideOffer.travel_start_date <= end_date_limit
         ).order_by(
             RideOffer.travel_start_date.asc(),
             RideOffer.travel_start_time.asc()
@@ -79,8 +89,8 @@ class RideRequestRepository:
             request_source=dto.request_source,
             travel_start_date=dto.travel_start_date,
             travel_start_time=dto.travel_start_time,
-            start_location=dto.start_location,
-            end_location=dto.end_location,
+            start_location=dto.start_location.lower().strip(),
+            end_location=dto.end_location.lower().strip(),
             seat_amount=dto.seat_amount
         )
         self.session.add(ride_request)
@@ -108,10 +118,19 @@ class RideRequestRepository:
         limit: int = 10,
         offset: int = 0
     ) -> Sequence[RideRequest]:
+        # Calculate Date Window (+2 days)
+        if isinstance(start_date, str):
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+        else:
+            start_date_obj = start_date
+            
+        end_date_limit = start_date_obj + timedelta(days=2)
+
         query = select(RideRequest).where(
-            RideRequest.start_location == start_location,
-            RideRequest.end_location == end_location,
-            RideRequest.travel_start_date >= start_date
+            RideRequest.start_location == start_location.lower().strip(),
+            RideRequest.end_location == end_location.lower().strip(),
+            RideRequest.travel_start_date >= start_date,
+            RideRequest.travel_start_date <= end_date_limit
         ).order_by(
             RideRequest.travel_start_date.asc(),
             RideRequest.travel_start_time.asc()

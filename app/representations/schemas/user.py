@@ -25,6 +25,7 @@ class UserRead(UserBase):
 class TelegramUserBase(BaseModel):
     telegram_id: int = Field(..., description="Telegram User ID")
     username: str | None = Field(None, description="Telegram username")
+    chat_id: int | None = Field(None, description="Telegram Chat ID")
     language_code: str | None = Field(None, description="Language code")
 
 

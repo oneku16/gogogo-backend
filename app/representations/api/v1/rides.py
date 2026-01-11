@@ -11,6 +11,7 @@ from app.representations.dtos.ride import (
 )
 from app.services.ride_service import RideService
 from app.infrastructure.dependencies.providers import get_ride_service
+from app.infrastructure.dependencies.providers import get_ride_service
 
 router = APIRouter(tags=["Rides"])
 
@@ -22,7 +23,8 @@ async def create_ride_offer(
     dto: CreateRideOfferDTO,
     service: Annotated[RideService, Depends(get_ride_service)]
 ):
-    return await service.create_ride_offer(driver_id, dto)
+    new_offer = await service.create_ride_offer(driver_id, dto)
+    return new_offer
 
 @router.get("/offers/search", response_model=List[RideOfferDTO])
 async def search_ride_offers(
@@ -96,7 +98,8 @@ async def create_ride_request(
     dto: CreateRideRequestDTO,
     service: Annotated[RideService, Depends(get_ride_service)]
 ):
-    return await service.create_ride_request(passenger_id, dto)
+    new_req = await service.create_ride_request(passenger_id, dto)
+    return new_req
 
 @router.get("/requests", response_model=List[RideRequestDTO])
 async def get_ride_requests(

@@ -99,6 +99,7 @@ class UserService:
             id=tg_user.id,
             user_id=tg_user.user_id,
             telegram_id=tg_user.telegram_id,
+            chat_id=tg_user.chat_id,
             username=tg_user.username,
             language_code=tg_user.language_code,
             created_at=tg_user.created_at,
