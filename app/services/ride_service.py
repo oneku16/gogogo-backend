@@ -36,12 +36,17 @@ class RideService:
         await self.session.refresh(offer)
         
         # Trigger Celery Task
+        print(f"Attempting to trigger process_ride_offer for {offer.id}")
         try:
             from app.services.tasks import process_ride_offer
-            process_ride_offer.delay(str(offer.id))
+            print(f"Imported process_ride_offer: {process_ride_offer}")
+            result = process_ride_offer.delay(str(offer.id))
+            print(f"Task triggered. Result ID: {result.id}")
         except Exception as e:
             # Log error but don't fail request
             print(f"Failed to trigger task: {e}")
+            import traceback
+            traceback.print_exc()
 
         return RideOfferDTO.model_validate(offer)
 
@@ -81,11 +86,16 @@ class RideService:
         await self.session.refresh(request)
 
         # Trigger Celery Task
+        print(f"Attempting to trigger process_ride_request for {request.id}")
         try:
             from app.services.tasks import process_ride_request
-            process_ride_request.delay(str(request.id))
+            print(f"Imported process_ride_request: {process_ride_request}")
+            result = process_ride_request.delay(str(request.id))
+            print(f"Task triggered. Result ID: {result.id}")
         except Exception as e:
             print(f"Failed to trigger task: {e}")
+            import traceback
+            traceback.print_exc()
 
         return RideRequestDTO.model_validate(request)
 

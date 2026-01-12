@@ -2,6 +2,7 @@ from datetime import timedelta, datetime
 from typing import Sequence
 from uuid import UUID
 from sqlalchemy import select, delete, func, cast, Date
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.models.ride import RideOffer, RideRequest, CarPhoto
@@ -24,22 +25,25 @@ class RideOfferRepository:
             end_location=dto.end_location.lower().strip(),
             car_model=dto.car_model,
             total_seat_amount=dto.total_seat_amount,
-            free_seats=dto.free_seats
+            free_seats=dto.free_seats,
+            price=dto.price
         )
         self.session.add(ride_offer)
         await self.session.flush()
         return ride_offer
 
     async def get_by_id(self, offer_id: UUID) -> RideOffer | None:
-        return await self.session.get(RideOffer, offer_id)
+        query = select(RideOffer).options(joinedload(RideOffer.driver)).where(RideOffer.id == offer_id)
+        result = await self.session.execute(query)
+        return result.scalars().first()
 
     async def get_all(self) -> Sequence[RideOffer]:
-        query = select(RideOffer).order_by(RideOffer.created_at.desc())
+        query = select(RideOffer).options(joinedload(RideOffer.driver)).order_by(RideOffer.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
 
     async def get_by_driver(self, driver_id: UUID) -> Sequence[RideOffer]:
-        query = select(RideOffer).where(RideOffer.driver_id == driver_id).order_by(RideOffer.created_at.desc())
+        query = select(RideOffer).options(joinedload(RideOffer.driver)).where(RideOffer.driver_id == driver_id).order_by(RideOffer.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
 
@@ -64,7 +68,7 @@ class RideOfferRepository:
             
         end_date_limit = start_date_obj + timedelta(hours=4)
 
-        query = select(RideOffer).where(
+        query = select(RideOffer).options(joinedload(RideOffer.driver)).where(
             RideOffer.start_location == start_location.lower().strip(),
             RideOffer.end_location == end_location.lower().strip(),
             RideOffer.free_seats >= seats_needed,
@@ -98,15 +102,17 @@ class RideRequestRepository:
         return ride_request
 
     async def get_by_id(self, request_id: UUID) -> RideRequest | None:
-        return await self.session.get(RideRequest, request_id)
+        query = select(RideRequest).options(joinedload(RideRequest.passenger)).where(RideRequest.id == request_id)
+        result = await self.session.execute(query)
+        return result.scalars().first()
 
     async def get_all(self) -> Sequence[RideRequest]:
-        query = select(RideRequest).order_by(RideRequest.created_at.desc())
+        query = select(RideRequest).options(joinedload(RideRequest.passenger)).order_by(RideRequest.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
 
     async def get_by_passenger(self, passenger_id: UUID) -> Sequence[RideRequest]:
-        query = select(RideRequest).where(RideRequest.passenger_id == passenger_id).order_by(RideRequest.created_at.desc())
+        query = select(RideRequest).options(joinedload(RideRequest.passenger)).where(RideRequest.passenger_id == passenger_id).order_by(RideRequest.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
 
@@ -126,7 +132,7 @@ class RideRequestRepository:
             
         end_date_limit = start_date_obj + timedelta(days=2)
 
-        query = select(RideRequest).where(
+        query = select(RideRequest).options(joinedload(RideRequest.passenger)).where(
             RideRequest.start_location == start_location.lower().strip(),
             RideRequest.end_location == end_location.lower().strip(),
             RideRequest.travel_start_date >= start_date,

@@ -40,12 +40,13 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.local
     container_name: gogogo-worker
-    command: celery -A app.core.celery_app.celery_app worker --loglevel=info -Q gogogo_queue --pool=solo
+    command: celery -A app.core.celery_app.celery_app worker --loglevel=info -Q gogogo_queue --concurrency=4
     env_file:
       - ../.env.local
     environment:
       - POSTGRES_HOST=gogogo-db
       - REDIS_URL=redis://redis:6379/0
+      - DB_POOL_CLASS=NullPool
       - BOT_WEBHOOK_URL=http://host.docker.internal:8001/notify
     depends_on:
       - gogogo-app

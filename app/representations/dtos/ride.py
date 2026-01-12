@@ -21,6 +21,7 @@ class CreateRideOfferDTO(BaseRideDTO):
     car_model: str
     total_seat_amount: int
     free_seats: int
+    price: Optional[int] = None
 
 
 class UpdateRideOfferDTO(BaseModel):
@@ -31,6 +32,7 @@ class UpdateRideOfferDTO(BaseModel):
     car_model: Optional[str] = None
     total_seat_amount: Optional[int] = None
     free_seats: Optional[int] = None
+    price: Optional[int] = None
 
 
 class RideOfferDTO(BaseRideDTO):
@@ -39,6 +41,7 @@ class RideOfferDTO(BaseRideDTO):
     car_model: str
     total_seat_amount: int
     free_seats: int
+    price: Optional[int] = None
 
 
 # --- Ride Request DTOs ---

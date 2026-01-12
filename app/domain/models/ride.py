@@ -3,7 +3,7 @@ import enum
 from datetime import date, time
 from typing import List
 
-from sqlalchemy import String, Integer, Date, Time, ForeignKey, Enum
+from sqlalchemy import String, Integer, Date, Time, ForeignKey, Enum, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -24,6 +24,9 @@ class CarPhoto(BaseModel):
 
 class RideOffer(BaseModel):
     __tablename__ = "ride_offers"
+    __table_args__ = (
+        Index('ix_ride_offers_search', 'start_location', 'end_location', 'travel_start_date'),
+    )
 
     driver_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), type_=UUID(as_uuid=True), nullable=False, index=True)
     request_source: Mapped[RequestSource] = mapped_column(Enum(RequestSource, name="request_source_enum"), nullable=False)
@@ -37,15 +40,17 @@ class RideOffer(BaseModel):
     car_model: Mapped[str] = mapped_column(String(100), nullable=False)
     total_seat_amount: Mapped[int] = mapped_column(Integer, nullable=False)
     free_seats: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[int] = mapped_column(Integer, nullable=True)
 
     # Relationships
-    # If we want to access photos from the RideOffer, we have to decide if photos are tied to a specific offer or just the user.
-    # The requirement said "driver_id" for photos. I will assume for now they are loosely coupled or accessed via User.
-    # However, to be safe, I am leaving this simple for now.
+    driver = relationship("User", foreign_keys=[driver_id])
 
 
 class RideRequest(BaseModel):
     __tablename__ = "ride_requests"
+    __table_args__ = (
+        Index('ix_ride_requests_search', 'start_location', 'end_location', 'travel_start_date'),
+    )
 
     passenger_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), type_=UUID(as_uuid=True), nullable=False, index=True)
     request_source: Mapped[RequestSource] = mapped_column(Enum(RequestSource, name="request_source_enum"), nullable=False)
@@ -59,6 +64,9 @@ class RideRequest(BaseModel):
     
     # "Any" or specific number. 'full' option.
     seat_amount: Mapped[str] = mapped_column(String(20), nullable=False)
+
+    # Relationships
+    passenger = relationship("User", foreign_keys=[passenger_id])
 
     def is_full(self) -> bool:
         return self.seat_amount == "full"
