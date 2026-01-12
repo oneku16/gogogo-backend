@@ -11,6 +11,7 @@ from app.infrastructure.repositories.ride import (
     RideOfferRepository, RideRequestRepository, CarPhotoRepository
 )
 from app.domain.interfaces.media_service import IMediaService
+from app.utils.normalization import normalize_location
 
 
 class RideService:
@@ -31,6 +32,10 @@ class RideService:
     # --- Ride Offers ---
 
     async def create_ride_offer(self, driver_id: uuid.UUID, dto: CreateRideOfferDTO) -> RideOfferDTO:
+        # Normalize locations
+        dto.start_location = normalize_location(dto.start_location)
+        dto.end_location = normalize_location(dto.end_location)
+        
         offer = await self.offer_repo.create(driver_id, dto)
         await self.session.commit()
         await self.session.refresh(offer)
@@ -68,9 +73,12 @@ class RideService:
         await self.session.commit()
 
     async def search_ride_offers(self, dto: RideOfferSearchDTO) -> List[RideOfferDTO]:
+        start = normalize_location(dto.start_location) if dto.start_location else None
+        end = normalize_location(dto.end_location) if dto.end_location else None
+        
         offers = await self.offer_repo.search_offers(
-            start_location=dto.start_location,
-            end_location=dto.end_location,
+            start_location=start,
+            end_location=end,
             seats_needed=dto.seats_needed,
             start_date=dto.start_time,
             limit=dto.limit,
@@ -81,6 +89,10 @@ class RideService:
     # --- Ride Requests ---
 
     async def create_ride_request(self, passenger_id: uuid.UUID, dto: CreateRideRequestDTO) -> RideRequestDTO:
+        # Normalize locations
+        dto.start_location = normalize_location(dto.start_location)
+        dto.end_location = normalize_location(dto.end_location)
+
         request = await self.request_repo.create(passenger_id, dto)
         await self.session.commit()
         await self.session.refresh(request)
@@ -117,9 +129,12 @@ class RideService:
         await self.session.commit()
 
     async def search_ride_requests(self, dto: RideRequestSearchDTO) -> List[RideRequestDTO]:
+        start = normalize_location(dto.start_location) if dto.start_location else None
+        end = normalize_location(dto.end_location) if dto.end_location else None
+
         requests = await self.request_repo.search_requests(
-            start_location=dto.start_location,
-            end_location=dto.end_location,
+            start_location=start,
+            end_location=end,
             start_date=dto.start_time,
             limit=dto.limit,
             offset=dto.offset

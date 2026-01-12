@@ -94,6 +94,20 @@ class UserService:
             return self._map_to_telegram_user_dto(tg_user)
         return None
 
+    async def update_telegram_user(self, telegram_id: int, role: Optional[str] = None, language: Optional[str] = None) -> TelegramUserDTO:
+        tg_user = await self.telegram_user.find_by_telegram_id(telegram_id)
+        if not tg_user:
+            raise ValueError(f"Telegram user with ID {telegram_id} not found.")
+
+        if role:
+            tg_user.role = role
+        if language:
+            tg_user.language = language
+            
+        await self.session.commit()
+        await self.session.refresh(tg_user)
+        return self._map_to_telegram_user_dto(tg_user)
+
     def _map_to_telegram_user_dto(self, tg_user: TelegramUser) -> TelegramUserDTO:
         return TelegramUserDTO(
             id=tg_user.id,
@@ -102,6 +116,8 @@ class UserService:
             chat_id=tg_user.chat_id,
             username=tg_user.username,
             language_code=tg_user.language_code,
+            role=tg_user.role,
+            language=tg_user.language,
             created_at=tg_user.created_at,
             updated_at=tg_user.updated_at
         )

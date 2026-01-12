@@ -51,6 +51,8 @@ class TelegramUserRepository:
             chat_id=telegram_user_dto.chat_id,
             username=telegram_user_dto.username,
             language_code=telegram_user_dto.language_code,
+            role=telegram_user_dto.role,
+            language=telegram_user_dto.language,
         )
         self.session.add(telegram_user)
         # Flush or let commit handle it. 

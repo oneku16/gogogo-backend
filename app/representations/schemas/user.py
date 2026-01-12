@@ -27,6 +27,12 @@ class TelegramUserBase(BaseModel):
     username: str | None = Field(None, description="Telegram username")
     chat_id: int | None = Field(None, description="Telegram Chat ID")
     language_code: str | None = Field(None, description="Language code")
+    role: str | None = Field(None, description="User role (driver/passenger)")
+    language: str | None = Field(None, description="Preferred language")
+
+class TelegramUserUpdate(BaseModel):
+     role: str | None = Field(None, description="User role")
+     language: str | None = Field(None, description="Preferred language")
 
 
 class TelegramUserCreate(TelegramUserBase):

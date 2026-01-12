@@ -23,4 +23,6 @@ class TelegramUser(BaseModel):
     chat_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
     username: Mapped[str] = mapped_column(String(64), nullable=True, index=True)
     language_code: Mapped[str] = mapped_column(String(64), nullable=True)
+    role: Mapped[str] = mapped_column(String(20), nullable=True)
+    language: Mapped[str] = mapped_column(String(10), nullable=True)
     

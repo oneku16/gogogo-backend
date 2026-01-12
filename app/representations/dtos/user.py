@@ -28,6 +28,8 @@ class TelegramUserDTO:
     chat_id: int | None
     username: str | None
     language_code: str | None
+    role: str | None
+    language: str | None
     created_at: datetime
     updated_at: datetime
 
@@ -40,3 +42,5 @@ class CreateTelegramUserDTO:
     username: str | None = None
     language_code: str | None = None
     phone_number: str | None = None
+    role: str | None = None
+    language: str | None = None
