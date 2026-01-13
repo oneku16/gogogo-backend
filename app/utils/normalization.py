@@ -9,6 +9,8 @@ CITY_MAPPING: Dict[str, str] = {
     "балыкчы": "Balykchy",
     "чолпон-ата": "Cholpon-Ata",
     "джалал-абад": "Jalal-Abad",
+    "джалал абад": "Jalal-Abad",
+    "манас": "Manas",
     "талас": "Talas",
     "баткен": "Batken",
     
@@ -22,6 +24,7 @@ CITY_MAPPING: Dict[str, str] = {
     "жалал-абад": "Jalal-Abad",
     "талас": "Talas",
     "баткен": "Batken",
+    "манас": "Manas"
     
     # Common variations
     "issykkul": "Issyk-Kul",
