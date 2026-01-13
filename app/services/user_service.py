@@ -28,7 +28,8 @@ class UserService:
         if existing_user:
             # Idempotent: Return existing user
             return self._map_to_user_dto(existing_user)
-
+        if dto.phone_number.startswith('+'):
+            dto.phone_number = dto.phone_number[1:]
         user = await self.user.create(dto)
         await self.session.commit()
         await self.session.refresh(user)

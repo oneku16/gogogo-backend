@@ -24,7 +24,7 @@ CITY_MAPPING: Dict[str, str] = {
     "жалал-абад": "Jalal-Abad",
     "талас": "Talas",
     "баткен": "Batken",
-    "манас": "Manas"
+    "манас": "Manas",
     
     # Common variations
     "issykkul": "Issyk-Kul",
