@@ -1,0 +1,42 @@
+name: Deploy to Ubuntu Home Server
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    name: Deploy to Self-Hosted Runner
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Run Container
+        run: |
+          # 1. Build the image (pointing to the correct Dockerfile)
+          docker build -t gogogo-backend -f docker/Dockerfile.prod .
+
+          # 2. Stop and remove old container (ignore error if it doesn't exist)
+          docker stop gogogo-backend || true
+          docker rm gogogo-backend || true
+
+          # 3. Run new container
+          # Assumes .env.prod exists in the home directory or a stable path. 
+          # We use $(pwd)/.env.prod if you put it in the runner folder, 
+          # BUT runner folders are volatile.
+          # BETTER: Put .env.prod in a fixed location like $HOME/gogogo/.env.prod
+          
+          docker run -d \
+            --name gogogo-backend \
+            --restart unless-stopped \
+            -p 8000:8000 \
+            --env-file /home/gogogo/.env.backend.prod \
+            gogogo-backend
+            
+      - name: Clean up system
+        run: docker system prune -f
