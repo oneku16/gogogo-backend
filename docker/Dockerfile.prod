@@ -1,0 +1,39 @@
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
+
+# Install the project into `/app`
+WORKDIR /app
+
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
+# Copy the project helper files
+COPY pyproject.toml uv.lock ./
+
+# Install the project's dependencies using the lockfile and settings
+RUN uv sync --frozen --no-install-project --no-dev
+
+# Then, copy the rest of the project source code
+COPY . .
+
+# Install the project itself
+RUN uv sync --frozen --no-dev
+
+
+# Create the final image
+FROM python:3.13-slim-bookworm
+
+# Copy the application from the builder
+COPY --from=builder --chown=app:app /app /app
+
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Set the working directory
+WORKDIR /app
+
+# Run the application (exec form for signal handling, sh for variable expansion)
+CMD ["/bin/sh", "-c", "exec fastapi run main.py --port 8000 --host 0.0.0.0 --workers ${WORKERS:-4}"]
