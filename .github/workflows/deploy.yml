@@ -36,6 +36,7 @@ jobs:
             --restart unless-stopped \
             -p 8000:8000 \
             --env-file /home/gogogo/.env.backend.prod \
+            --network gogogo-network \
             gogogo-backend
             
       - name: Clean up system
