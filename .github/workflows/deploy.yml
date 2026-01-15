@@ -28,7 +28,6 @@ jobs:
           # 2.1. Run Database Migrations
           docker run --rm \
             --env-file /home/gogogo/.env.backend.prod \
-            -e POSTGRES_HOST=gogogo-db \
             --network gogogo-network \
             gogogo-backend \
             alembic upgrade head
