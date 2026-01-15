@@ -3,7 +3,7 @@ import enum
 from datetime import date, time
 from typing import List
 
-from sqlalchemy import String, Integer, Date, Time, ForeignKey, Enum, Index
+from sqlalchemy import String, Integer, Date, Time, ForeignKey, Enum, Index, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -41,6 +41,7 @@ class RideOffer(BaseModel):
     total_seat_amount: Mapped[int] = mapped_column(Integer, nullable=False)
     free_seats: Mapped[int] = mapped_column(Integer, nullable=False)
     price: Mapped[int] = mapped_column(Integer, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
     # Relationships
     driver = relationship("User", foreign_keys=[driver_id])
@@ -64,6 +65,7 @@ class RideRequest(BaseModel):
     
     # "Any" or specific number. 'full' option.
     seat_amount: Mapped[str] = mapped_column(String(20), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
     # Relationships
     passenger = relationship("User", foreign_keys=[passenger_id])

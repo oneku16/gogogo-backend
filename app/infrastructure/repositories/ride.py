@@ -42,13 +42,22 @@ class RideOfferRepository:
         result = await self.session.execute(query)
         return result.scalars().all()
 
+    async def get_active_offers(self) -> Sequence[RideOffer]:
+         query = select(RideOffer).options(joinedload(RideOffer.driver)).where(RideOffer.is_active == True).order_by(RideOffer.created_at.desc())
+         result = await self.session.execute(query)
+         return result.scalars().all()
+
     async def get_by_driver(self, driver_id: UUID) -> Sequence[RideOffer]:
-        query = select(RideOffer).options(joinedload(RideOffer.driver)).where(RideOffer.driver_id == driver_id).order_by(RideOffer.created_at.desc())
+        query = select(RideOffer).options(joinedload(RideOffer.driver)).where(
+            RideOffer.driver_id == driver_id,
+            RideOffer.is_active == True
+        ).order_by(RideOffer.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
 
     async def delete(self, ride_offer: RideOffer) -> None:
-        await self.session.delete(ride_offer)
+        ride_offer.is_active = False
+        self.session.add(ride_offer)
         await self.session.flush()
 
     async def search_offers(
@@ -73,7 +82,10 @@ class RideOfferRepository:
             RideOffer.end_location == end_location.lower().strip(),
             RideOffer.free_seats >= seats_needed,
             RideOffer.travel_start_date >= start_date,
-            RideOffer.travel_start_date <= end_date_limit
+            RideOffer.free_seats >= seats_needed,
+            RideOffer.travel_start_date >= start_date,
+            RideOffer.travel_start_date <= end_date_limit,
+            RideOffer.is_active == True
         ).order_by(
             RideOffer.travel_start_date.asc(),
             RideOffer.travel_start_time.asc()
@@ -112,7 +124,10 @@ class RideRequestRepository:
         return result.scalars().all()
 
     async def get_by_passenger(self, passenger_id: UUID) -> Sequence[RideRequest]:
-        query = select(RideRequest).options(joinedload(RideRequest.passenger)).where(RideRequest.passenger_id == passenger_id).order_by(RideRequest.created_at.desc())
+        query = select(RideRequest).options(joinedload(RideRequest.passenger)).where(
+            RideRequest.passenger_id == passenger_id,
+            RideRequest.is_active == True
+        ).order_by(RideRequest.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
 
@@ -136,7 +151,9 @@ class RideRequestRepository:
             RideRequest.start_location == start_location.lower().strip(),
             RideRequest.end_location == end_location.lower().strip(),
             RideRequest.travel_start_date >= start_date,
-            RideRequest.travel_start_date <= end_date_limit
+            RideRequest.travel_start_date >= start_date,
+            RideRequest.travel_start_date <= end_date_limit,
+            RideRequest.is_active == True
         ).order_by(
             RideRequest.travel_start_date.asc(),
             RideRequest.travel_start_time.asc()
@@ -146,7 +163,8 @@ class RideRequestRepository:
         return result.scalars().all()
         
     async def delete(self, ride_request: RideRequest) -> None:
-        await self.session.delete(ride_request)
+        ride_request.is_active = False
+        self.session.add(ride_request)
         await self.session.flush()
 
 
