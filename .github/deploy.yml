@@ -2,7 +2,7 @@ name: Deploy to Ubuntu Home Server
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   deploy:
@@ -40,4 +40,3 @@ jobs:
             
       - name: Clean up system
         run: docker system prune -f
-        
