@@ -25,6 +25,13 @@ jobs:
           docker stop gogogo-backend || true
           docker rm gogogo-backend || true
 
+          # 2.1. Run Database Migrations
+          docker run --rm \
+            --env-file /home/gogogo/.env.backend.prod \
+            --network gogogo-network \
+            gogogo-backend \
+            alembic upgrade head
+
           # 3. Run new container
           # Assumes .env.prod exists in the home directory or a stable path. 
           # We use $(pwd)/.env.prod if you put it in the runner folder, 
