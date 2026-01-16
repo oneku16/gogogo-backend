@@ -55,6 +55,7 @@ jobs:
             --name gogogo-worker \
             --restart unless-stopped \
             --env-file /home/gogogo/.env.backend.prod \
+            -e DB_POOL_CLASS=NullPool \
             --network gogogo-network \
             gogogo-backend \
             celery -A app.core.celery_app.celery_app worker --loglevel=info -Q gogogo_queue --concurrency=4
