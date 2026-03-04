@@ -95,7 +95,15 @@ class UserService:
             return self._map_to_telegram_user_dto(tg_user)
         return None
 
-    async def update_telegram_user(self, telegram_id: int, role: Optional[str] = None, language: Optional[str] = None) -> TelegramUserDTO:
+    async def update_telegram_user(
+        self, 
+        telegram_id: int, 
+        role: Optional[str] = None, 
+        language: Optional[str] = None,
+        phone_number: Optional[str] = None,
+        first_name: Optional[str] = None,
+        last_name: Optional[str] = None
+    ) -> TelegramUserDTO:
         tg_user = await self.telegram_user.find_by_telegram_id(telegram_id)
         if not tg_user:
             raise ValueError(f"Telegram user with ID {telegram_id} not found.")
@@ -104,6 +112,20 @@ class UserService:
             tg_user.role = role
         if language:
             tg_user.language = language
+            
+        # Update linked User entity if fields provided
+        if any([phone_number, first_name, last_name]):
+            # Ensure user is loaded (lazy="joined" should handle this, but explicit check doesn't hurt)
+            if not tg_user.user:
+                 # Should not happen ideally if schema enforces FK, but practical safety
+                 pass 
+            else:
+                if phone_number:
+                    tg_user.user.phone_number = phone_number
+                if first_name:
+                    tg_user.user.first_name = first_name
+                if last_name:
+                    tg_user.user.last_name = last_name
             
         await self.session.commit()
         await self.session.refresh(tg_user)
@@ -119,6 +141,9 @@ class UserService:
             language_code=tg_user.language_code,
             role=tg_user.role,
             language=tg_user.language,
+            phone_number=tg_user.phone_number,
+            first_name=tg_user.first_name,
+            last_name=tg_user.last_name,
             created_at=tg_user.created_at,
             updated_at=tg_user.updated_at
         )

@@ -30,8 +30,11 @@ class TelegramUserDTO:
     language_code: str | None
     role: str | None
     language: str | None
-    created_at: datetime
-    updated_at: datetime
+    phone_number: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    created_at: datetime = None
+    updated_at: datetime = None
 
 
 @dataclass

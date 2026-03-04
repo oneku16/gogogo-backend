@@ -33,6 +33,9 @@ class TelegramUserBase(BaseModel):
 class TelegramUserUpdate(BaseModel):
      role: str | None = Field(None, description="User role")
      language: str | None = Field(None, description="Preferred language")
+     phone_number: str | None = Field(None, description="User's phone number")
+     first_name: str | None = Field(None, description="User's first name")
+     last_name: str | None = Field(None, description="User's last name")
 
 
 class TelegramUserCreate(TelegramUserBase):
@@ -53,6 +56,9 @@ class TelegramUserRegisterRequest(TelegramUserBase):
 class TelegramUserRead(TelegramUserBase):
     id: UUID
     user_id: UUID
+    phone_number: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
     created_at: datetime
     updated_at: datetime
 

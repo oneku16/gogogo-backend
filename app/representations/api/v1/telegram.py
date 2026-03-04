@@ -55,6 +55,13 @@ async def update_telegram_user(
     service: UserService = Depends(get_user_service),
 ):
     try:
-        return await service.update_telegram_user(telegram_id, role=update_data.role, language=update_data.language)
+        return await service.update_telegram_user(
+            telegram_id, 
+            role=update_data.role, 
+            language=update_data.language,
+            phone_number=update_data.phone_number,
+            first_name=update_data.first_name,
+            last_name=update_data.last_name
+        )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

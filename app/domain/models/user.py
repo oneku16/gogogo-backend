@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy import String, BigInteger, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from .base import BaseModel
@@ -25,4 +25,17 @@ class TelegramUser(BaseModel):
     language_code: Mapped[str] = mapped_column(String(64), nullable=True)
     role: Mapped[str] = mapped_column(String(20), nullable=True)
     language: Mapped[str] = mapped_column(String(10), nullable=True)
-    
+
+    user: Mapped["User"] = relationship("User", lazy="joined")
+
+    @property
+    def phone_number(self) -> str:
+        return self.user.phone_number
+
+    @property
+    def first_name(self) -> str | None:
+        return self.user.first_name
+
+    @property
+    def last_name(self) -> str | None:
+        return self.user.last_name
