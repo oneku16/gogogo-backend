@@ -43,14 +43,20 @@ class RideOfferRepository:
         return result.scalars().all()
 
     async def get_active_offers(self) -> Sequence[RideOffer]:
-         query = select(RideOffer).options(joinedload(RideOffer.driver)).where(RideOffer.is_active == True).order_by(RideOffer.created_at.desc())
+         current_date = datetime.utcnow().date()
+         query = select(RideOffer).options(joinedload(RideOffer.driver)).where(
+             RideOffer.is_active == True,
+             RideOffer.travel_start_date >= current_date
+         ).order_by(RideOffer.created_at.desc())
          result = await self.session.execute(query)
          return result.scalars().all()
 
     async def get_by_driver(self, driver_id: UUID) -> Sequence[RideOffer]:
+        current_date = datetime.utcnow().date()
         query = select(RideOffer).options(joinedload(RideOffer.driver)).where(
             RideOffer.driver_id == driver_id,
-            RideOffer.is_active == True
+            RideOffer.is_active == True,
+            RideOffer.travel_start_date >= current_date
         ).order_by(RideOffer.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
@@ -124,9 +130,11 @@ class RideRequestRepository:
         return result.scalars().all()
 
     async def get_by_passenger(self, passenger_id: UUID) -> Sequence[RideRequest]:
+        current_date = datetime.utcnow().date()
         query = select(RideRequest).options(joinedload(RideRequest.passenger)).where(
             RideRequest.passenger_id == passenger_id,
-            RideRequest.is_active == True
+            RideRequest.is_active == True,
+            RideRequest.travel_start_date >= current_date
         ).order_by(RideRequest.created_at.desc())
         result = await self.session.execute(query)
         return result.scalars().all()
